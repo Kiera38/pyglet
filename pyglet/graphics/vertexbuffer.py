@@ -240,6 +240,17 @@ class MappableBufferObject(BufferObject, AbstractMappable):
         self._dirty_min = sys.maxsize
         self._dirty_max = 0
 
+    def invalidate(self):
+        size = self._dirty_max - self._dirty_min
+        if size > 0:
+            super().bind()
+            if size == self.size:
+                glBufferData(GL_ARRAY_BUFFER, self.size, self.data, self.usage)
+            else:
+                glBufferSubData(GL_ARRAY_BUFFER, self._dirty_min, size, self.data_ptr + self._dirty_min)
+            self._dirty_min = sys.maxsize
+            self._dirty_max = 0
+
     def bind(self):
         # Commit pending data
         super(MappableBufferObject, self).bind()
