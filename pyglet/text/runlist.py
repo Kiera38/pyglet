@@ -182,6 +182,9 @@ class RunList:
         if self.runs[-1].value == value:
             self.runs[-1].count += count
             return
+        if self.runs[-1].count == 0:
+            self.runs[-1] = _Run(value, count)
+            return
         self.runs.append(_Run(value, count))
 
     def insert_run(self, pos: int, length: int, value: Any) -> None:
